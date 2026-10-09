@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 👈 只有推送形如 v1.0.0、v1.0.1 的标签时，才会触发这个工作流
+
+permissions:
+  contents: write # 👈 必须开启，否则 Action 没有权限创建 Release
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest # 👈 WPF 项目必须用 Windows 环境构建
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          # ⚠️ 这里指定 .NET 10。如果你本地是 10.0.100 正式版，就用这个；
+          # 如果是预览版，可能需要加 dotnet-quality: 'preview' 参数
+          dotnet-version: '10.0.x' 
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish App
+        # ⚠️ 注意这里的路径：假设你的 .csproj 文件在 WinCalendar/WinCalendar.csproj
+        # 如果你的项目结构不同，请修改为正确的相对路径
+        # 这里的参数和你在 VS 里配置的完全一致：独立发布 + 单文件
+        run: dotnet publish WinCalendar/WinCalendar.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+
+      - name: Compress Artifacts
+        # ⚠️ 这里把整个 publish 文件夹打包成 ZIP。虽然我们说单文件，
+        # 但前文提到 WPF 必然会带出几个原生 DLL，所以打包整个文件夹最稳妥
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./WinCalendar-${{ github.ref_name }}-win-x64.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./WinCalendar-${{ github.ref_name }}-win-x64.zip
+          generate_release_notes: true # 👈 自动生成更新说明（基于 commit 记录）
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 👈 GitHub 自动提供的令牌，无需手动配置

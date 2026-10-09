@@ -20,4 +20,8 @@
     <Resource Include="app.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include=".github\workflows\" />
+  </ItemGroup>
+
 </Project>
