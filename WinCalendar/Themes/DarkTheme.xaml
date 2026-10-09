@@ -1,0 +1,89 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ===================== 背景 / 材质 ===================== -->
+
+    <!-- 兜底底色：系统材质不可用、抓屏也失败时就是它 -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#E61C1C1C"/>
+
+    <!-- 回退路径（老系统）的模糊图之上烤进去的那层蒙版 -->
+    <SolidColorBrush x:Key="BackdropTintBrush" Color="#CC1C1C1C"/>
+
+    <!-- 🎯 系统材质之上的主题色蒙版（深色版）。
+         注意：DWM 的 Acrylic 材质本身也会跟着深浅模式变，
+         这里只要保证"深色底 + 浅色字"的对比度即可。 -->
+    <SolidColorBrush x:Key="MaterialTintBrush" Color="#991C1C1C"/>
+
+    <!-- ===================== 文字 ===================== -->
+
+    <!-- 深色下不用纯白，纯白在深底上反而刺眼 -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F2F2F2"/>
+    <!-- 农历小字 / 星期表头 -->
+    <SolidColorBrush x:Key="SubTextBrush" Color="#B4B4B4"/>
+    <SolidColorBrush x:Key="WeekendTextBrush" Color="#4DA6FF"/>
+    <!-- 上/下个月的日期：深底上必须提亮一档，否则整片消失 -->
+    <SolidColorBrush x:Key="OtherMonthTextBrush" Color="#7A7A7A"/>
+
+    <!-- ===================== 强调色 / 状态色 ===================== -->
+
+    <!-- 深色主题的强调色比浅色版亮一档：在深底上更跳得出来 -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#3D9BFF"/>
+    <SolidColorBrush x:Key="TodayBackgroundBrush" Color="#3D9BFF"/>
+    <SolidColorBrush x:Key="TodayTextBrush" Color="#0A1929"/>
+
+    <!-- 节假日"休"角标 / 调休"班"角标 -->
+    <SolidColorBrush x:Key="RestBadgeBrush" Color="#2F7FE0"/>
+    <SolidColorBrush x:Key="WorkBadgeBrush" Color="#E07C10"/>
+    <SolidColorBrush x:Key="HolidayBackgroundBrush" Color="#1A2A45"/>
+    <SolidColorBrush x:Key="WorkdayBackgroundBrush" Color="#2A2A2A"/>
+
+    <!-- ===================== 托盘右键菜单 ===================== -->
+    <!-- 系统默认的菜单样式恒为浅色，深色主题下会非常突兀，所以自绘一套 -->
+
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#2B2B2B"/>
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="#3C3C3C"/>
+    <SolidColorBrush x:Key="MenuHoverBrush" Color="#33FFFFFF"/>
+
+    <Style x:Key="ThemedContextMenu" TargetType="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MenuBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8" Padding="4" Margin="6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.45" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ThemedMenuItem" TargetType="MenuItem">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="Padding" Value="12,7"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Bd" Background="Transparent" CornerRadius="6"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource MenuHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
